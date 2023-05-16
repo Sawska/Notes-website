@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="css/register.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    </head>
+    <body>
+
+<div class="SignUpForm">
+<form action="/register" method="post" class="form">
+    <h1 class="text">We don't recognise you, Please Sign up</h1>
+    <div class="InputContainter">
+        <input type="text" class="input" name="username" placeholder="">
+        <label for="" class="label">Username</label>
+    </div>
+    <div class="InputContainter">
+        <input type="text" class="input" name="FirstName" placeholder="">
+        <label for="" class="label">First Name</label>
+    </div>
+    <div class="InputContainter">
+        <input type="text" class="input" name="LastName" placeholder="">
+        <label for="" class="label">Last Name</label>
+    </div>
+    <div class="InputContainter">
+        <input type="password" class="input" name="password" placeholder="">
+        <label for="" class="label">Password</label>
+    </div>
+    <div class="InputContainter">
+        <input type="password" class="input" name="passwordRe"placeholder="">
+        <label for="" class="label">Reenter password</label>
+    </div>
+    <% if(isEqual == false) {%>
+        <a class="passwordWarning">Passwords not equal,</a>
+        <% }%>
+        <% if(AlredyExists == true) { %>
+            <a class="UserNameWarning">Username alredy taken</a>
+            <%}%>
+    <input type="submit" class="submit" value="Sign up">
+</form>
+</div>
+    <form action="/login" method="get">
+        <button class="login">Login</button>
+    </form>
+    </body>
+</html>
+
