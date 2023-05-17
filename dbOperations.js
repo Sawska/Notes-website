@@ -62,4 +62,5 @@ module.exports = {
     addToDb,
     checkIfAlredyExists,
     userAndPassMatch,
+    findPassword,
 }

@@ -21,8 +21,7 @@ app.use(express.urlencoded({extended:true}))
 
 app.set('view engine','ejs')
 
-app.use(express.static(path.join(__dirname,'public')))
-
+ app.use(express.static(path.join(__dirname,'public')))
 app.get('/register',(req,res) => {
     let AlredyExists = null
     let isEqual = null
@@ -35,7 +34,16 @@ app.get('/login',(req,res) => {
 })
 
 app.get('/',(req,res) => {
-    res.render('pages/main')
+    if(!req.session.loggedin) {
+        let AlredyExists = null
+        let isEqual = null
+        res.render("pages/register",{AlredyExists,isEqual})
+    } else {
+        let firstName = req.session.firstName
+        let lastName = req.session.lastName
+        let Todos = []
+        res.render('pages/main',{firstName,lastName,Todos})
+    }
 })
 
 app.post('/register', async (req,res) => {
@@ -44,10 +52,16 @@ app.post('/register', async (req,res) => {
     console.log(req.body)
     let pas = req.body.password === req.body.passwordRe
     if(!pas) isEqual = false
-        let result = await dbOperations.addToDb(req.body.username,req.body.password,req.body.firstName,req.body.LastName)
+        let result = await dbOperations.addToDb(req.body.username,req.body.password,req.body.FirstName,req.body.LastName)
         if(!result) AlredyExists = true
         if(isEqual !== null || AlredyExists !== null) res.render("pages/register",{AlredyExists,isEqual}) 
-        else res.render("pages/registered")
+        else {
+            req.session.loggedin = true
+            req.session.username = req.body.username
+            req.session.firstName = req.body.FirstName
+            req.session.lastName = req.body.LastName
+            res.render("pages/registered")
+        }
 })
 
 app.post('/login',async (req,res) => {
@@ -56,7 +70,38 @@ app.post('/login',async (req,res) => {
             let Wrong = true
         res.render("pages/login",{Wrong})
         }
-        else res.render('pages/main')
+        else {
+            req.session.loggedin = true
+            req.session.usermane = req.body.username
+            let resp = await dbOperations.findPassword(req.body.username)
+            req.session.firstName = resp[0].Firstname
+            req.session.lastName = resp[0].Lastname
+            let firstName = resp[0].Firstname
+            let lastName = resp[0].Lastname
+            let Todos = []
+            res.render('pages/main',{firstName,lastName,Todos})
+        }
+})
+
+app.post('/Logout',(req,res) => {
+    req.session.destroy((err) => {
+        if(err) throw err
+        let Wrong = false
+        res.render("pages/login",{Wrong})
+    })
+})
+
+app.get('/addTodo',(req,res) => {
+    let firstName = req.session.firstName
+    let lastName = req.session.lastName
+    res.render("pages/createList",{firstName,lastName})
+})
+
+app.post('/TitleCreate',(req,res) => {
+    let addToDb = true
+    let firstName = req.session.firstName
+    let lastName = req.session.lastName
+    res.render("pages/createList",{firstName,lastName})
 })
 
 app.listen(PORT,host,(err) => {
