@@ -1,5 +1,5 @@
 .btnHome {
-    background-color: transparent;
+background-color: transparent;
     border: none;
     cursor: pointer;
 }
@@ -29,7 +29,7 @@
     background-color: #FFEA00;
 }
 .Title {
-    display: none; /* Hide the modal by default */
+    display: none; 
     position: fixed;
     z-index: 1;
     left: 0;
@@ -82,4 +82,108 @@
 
 .TitleSubmit:hover {
     background-color: #FFEA00;
+}
+
+.TaskField {
+  display: flex;
+  position: relative;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px; 
+  width: 200px;
+  height: 80px;
+  background-color: #f2f2f2;
+  margin-bottom: 10px;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.TaskField:hover {
+    background-color:snow;
+}
+
+.line {
+    display: inline-block;
+}
+
+
+
+
+.todoListText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    text-align: center;
+}
+
+.Button {
+    background: transparent;
+    border: none;
+    position: absolute;
+    bottom: 0;
+    right: 8%;
+}
+
+.ButtonDel {
+    background: transparent;
+    border: none;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+
+
+ 
+.secretIndex {
+    display: none;
+}
+
+.TaskSubmit { 
+    border-radius: 12px;
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%); 
+    height: 30px;
+    width: 100px;
+    cursor: pointer;
+
+    background-color: #0096FF;
+    border: 2px blue;
+    color: white;
+} 
+
+
+.updateClose {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+.updateClose:hover,
+.updateClose:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+
+.TitleUpdate {
+    display: none; 
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+
+.line {
+    display: inline-block;
 }

@@ -5,8 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/main.css">
-    <script src="/js/createTitleDropdown.js"></script>
+    <link rel="stylesheet" type="text/css" href="./public/css/main.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="./public/js/createTitleDropdown.js"></script>
 </head>
 <body>
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -27,15 +30,26 @@
           </form>
         </div>
       </nav>
-      <% if(Todos.length == 0) {%>
-        <h1 class="txt">You don't have any Todo lists</h1>
-        <% } else {%>
-          <div class="list-container"> 
-            <% for(let i = 0;i<Todos.length;i++) {%>
-              <div class="TaskField">Todos[i].title</div>
-            <% }%>
-          <% }%>
-          </div>
+      
+        <!-- <h1 class="txt">You don't have any Todo lists</h1> -->
+        <div class="line">
+          <form action="/deleteList" method="post">
+            <div class="TaskField" onclick="getToTheList()">
+              <p class="todoListText" name="titleName">sdsdsdasasssdsdsds</p>
+              <div class="line">
+                <button class="Button updBtn" type="button">
+                  <i class="fas fa-pen"></i>
+                </button>
+                <button class="ButtonDel" type="submit">
+                  <i class='fa-solid fa-trash-can'></i>
+                </button>
+                <input type="hidden" class="secretIndex" name="index" value="<%= i %>">
+              </div>
+            </div>
+          </form>
+        </div>
+      
+
         <!-- <form action="/addTodo" method="get"> -->
             <button type="submit" class="plus" id="plus">
                 <span>&#43;</span>
@@ -55,6 +69,21 @@
             </div>
           </div>
         </div>
+        <form action="/updateTask" method="post">
+          <div id="updateTitle" class="TitleUpdate">
+            <form action="/TitleCreate" method="post">
+            <div class="form-content">
+              <span class="updateClose">&times;</span>
+              <div class="input-row">
+                <input type="text" placeholder="<%= Todos[i].title%>" name="TodolistTitle" required>
+              </div>
+              <div class="input-row">
+                <input type="hidden" class="secretIndex" name="title" value="<%=Todos[i].title%>">
+                  <button class="TitleSubmit" type="submit">Confirm</button>
+                </form>
+              </div>
+            </div>
+        </form>
 </body>
 </html>
 

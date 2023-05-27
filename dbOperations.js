@@ -1,5 +1,6 @@
 const mysql = require('mysql')
 const bcrypt = require('bcrypt')
+const todoList = require('./TodoListClass')
 
 const connection = mysql.createConnection({
     host:'localhost',
@@ -58,9 +59,117 @@ function findPassword(username) {
     })
 }
 
+
+async function createTodoList(username,TodolistTitle) {
+    let res = await getUserId(username) 
+    let id = res[0].id
+    let obj = JSON.stringify(new todoList.TodoList(TodolistTitle))
+        connection.query(`INSERT INTO todoList (UserId,TodoObject,Title) VALUES(${id},'${obj}','${TodolistTitle}')`,(err,result) => {
+            if(err) throw err
+        })
+}
+
+ async function getUserId(username) {
+    return new Promise((resolve,reject) => {
+        connection.query(`SELECT id FROM users WHERE username = '${username}'`,(err,result) => {
+            if(result.length !== 0) resolve(result)
+        })
+    })
+}
+
+async function getTodoList(username,title) {
+    let res = await getUserId(username) 
+    let id = res[0].id
+    return new Promise((resolve,reject) => {
+        connection.query(`SELECT TodoObject FROM todoList WHERE UserId = ${id} AND Title = '${title}'`,(err,result) => {
+            if(err) reject(err)
+            resolve(result)
+        })
+    })
+}
+
+async function addTask(username,taskTitle,taskDescription,Title) {
+    let res = await getTodoList(username,Title)
+    let TodoList = JSON.parse(res[0].TodoObject)
+    let task = new todoList.Task(taskTitle,taskDescription)
+
+    TodoList.taskList.push(task)
+    // TodoList = JSON.stringify(TodoList)
+    let response = await getUserId(username) 
+    let id = response[0].id
+    await updateTodoList(Title,id,TodoList)
+}
+
+async function updateTodoList(title,id,todoList) {
+    todoList = JSON.stringify(todoList)
+    return new Promise((resolve,reject) => {
+        connection.query(`UPDATE todoList SET TodoObject = '${todoList}' WHERE UserId = ${id} AND Title = '${title}'`,(err,res) => {
+            if(err) reject(err)
+            else resolve(true)
+        })
+    }) 
+}
+
+async function updateTodoListName(username,Title,newName) {
+    let res = await getTodoList(username,Title)
+    let TodoList = JSON.parse(res[0].TodoObject)
+    TodoList.title = newName
+    TodoList = JSON.stringify(TodoList)
+    let response = await getUserId(username) 
+    let id = response[0].id
+    await updateTodoList(Title,id,todoList)
+}
+
+async function removeTodoList(username,title) {
+     let res = await getUserId(username) 
+     let id = res[0].id
+     connection.query(`DELETE from todoList WHERE UserId = ${id} AND Title = '${title}'`)
+}
+
+
+async function updateTask(username,newTaskTitle,newTaskDescription,Title,index) {
+         let res = await getTodoList(username,Title)
+    let TodoList = JSON.parse(res[0].TodoObject)
+     TodoList.taskList[index].title = newTaskTitle
+     TodoList.taskList[index].title = newTaskDescription
+        // TodoList = JSON.stringify(TodoList)
+    let response = await getUserId(username) 
+    let id = response[0].id
+    await updateTodoList(Title,id,TodoList)
+}
+
+async function removeTask(username,Title,index) {
+    let res = await getTodoList(username,Title)
+    let TodoList = JSON.parse(res[0].TodoObject)
+TodoList.taskList = TodoList.taskList.filter((el,i) => i !== +index)
+    // TodoList = JSON.stringify(TodoList)
+    let response = await getUserId(username) 
+    let id = response[0].id
+    await updateTodoList(Title,id,TodoList)
+}
+
+function getTodos(id,username) {
+    return new Promise((reject,resolve) => {
+        connection.query(`SELECT Title from todoList WHERE UserId = ${id} AND username = '${username}'`, (err,result) => {
+            if(err) reject(err)
+            else resolve(result)
+        })
+    })
+}
+
+
 module.exports = {
     addToDb,
     checkIfAlredyExists,
     userAndPassMatch,
     findPassword,
+    createTodoList,
+    addTask,
+    getTodoList,
+    removeTask,
+    updateTask,
+    getTodoList,
+    getUserId,
+    removeTodoList,
+    updateTodoListName,
 }
