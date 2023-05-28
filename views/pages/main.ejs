@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="/js/createTitleDropdown.js"></script>
 </head>
 <body>
@@ -18,7 +19,7 @@
           <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item active">
               <form class="form-inline my-2 my-lg-0" action="/" method="get">
-                <button class="btnHome">Home</button>
+                <button class="btnHome" type="submit">Home</button>
               </form>
             </li>
           </ul>
@@ -27,34 +28,63 @@
           </form>
         </div>
       </nav>
-      <% if(Todos.length == 0) {%>
+      <% if(Todos.length == 0) { %>
         <h1 class="txt">You don't have any Todo lists</h1>
-        <% } else {%>
-          <div class="list-container"> 
-            <% for(let i = 0;i<Todos.length;i++) {%>
-              <div class="TaskField">Todos[i].title</div>
-            <% }%>
-          <% }%>
-          </div>
-        <!-- <form action="/addTodo" method="get"> -->
-            <button type="submit" class="plus" id="plus">
-                <span>&#43;</span>
-              </button>
-        <!-- </form>  -->
-        <div id="todoTitle" class="Title">
-          <form action="/TitleCreate" method="post">
-          <div class="form-content">
-            <span class="close">&times;</span>
-            <div class="input-row">
-              <input type="text" placeholder="Todo list name" name="TodolistTitle">
-              <!-- <textarea type="text" placeholder="Task name"></textarea> -->
-            </div>
-            <div class="input-row">
-                <button class="TitleSubmit" type="submit">Confirm</button>
+        <% } else { %>
+          <% for (let i = 0; i < Todos.length; i++) { %>
+            <div class="line">
+              <form action="/deleteList" method="post">
+                <div class="TaskField">
+                  <a href="http://localhost:3000/ShowTodo:<%= JSON.parse(Todos[i].TodoObject).title %>:<%= i %>">
+                    <p class="todoListText" name="titleName"><%= JSON.parse(Todos[i].TodoObject).title %></p>
+                  </a>
+                  <input type="hidden" name="titleName" value="<%= JSON.parse(Todos[i].TodoObject).title %>">
+                  <div class="line">
+                    <button class="Button updBtn" type="button">
+                      <i class="fas fa-pen"></i>
+                    </button>
+                    <button class="ButtonDel" type="submit">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                    <input type="hidden" class="secretIndex" name="index" value="<%= i %>">
+                  </div>
+                </div>
+              </form>
+              <form action="/updateList" method="post">
+                <div id="updateTitle<%= i %>" class="TitleUpdate">
+                  <div class="form-content">
+                    <span class="updateClose">&times;</span>
+                    <div class="input-row">
+                      <input type="text" name="TodolistTitle" value="<%= JSON.parse(Todos[i].TodoObject).title %>" required>
+                    </div>
+                    <div class="input-row">
+                      <input type="hidden" class="secretIndex" name="title" value="<%= JSON.parse(Todos[i].TodoObject).title %>">
+                      <button class="TitleSubmit" type="submit">Confirm</button>
+                    </div>
+                  </div>
+                </div>
               </form>
             </div>
+          <% } %>
+        <% } %>
+        <button type="submit" class="plus" id="plus">
+          <span>&#43;</span>
+        </button>
+      
+      <div id="todoTitle" class="Title">
+        <form action="/TitleCreate" method="post">
+        <div class="form-content">
+          <span class="close">&times;</span>
+          <div class="input-row">
+            <input type="text" placeholder="Todo list name" name="TodolistTitle">
+            
+          </div>
+          <div class="input-row">
+              <button class="TitleSubmit" type="submit">Confirm</button>
+            </form>
           </div>
         </div>
+      </div>
 </body>
 </html>
 

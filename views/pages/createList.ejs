@@ -32,7 +32,7 @@
         </div>
       </nav>
       </div>
-      <form action="/CreateTodoList" method="post">
+      <form action="/" method="get">
         <button class="crtTd">
             <span>&#x2713;</span>
         </button>
@@ -83,10 +83,10 @@
                         <div class="form-content">
                           <span class="closeUpdate">&times;</span>
                           <div class="input-row">
-                            <textarea id="myTxtAr" placeholder= "<%= tasks[i].title %>"  class="txt" name="taskName"></textarea>
+                            <textarea id="myTxtAr"  class="txt" name="taskName"><%= tasks[i].title %></textarea>
                           </div>
                           <div class="input-row">
-                            <textarea id="myTxt" placeholder= "<%= tasks[i].description %>" class="txt" name="taskDescription"></textarea>
+                            <textarea id="myTxt" class="txt" name="taskDescription"><%= tasks[i].description %></textarea>
                           </div>
                           <div class="input-row">
                             <button class="TaskSubmit" type="submit">Confirm</button>

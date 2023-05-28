@@ -5,7 +5,6 @@ const PORT = 3000
 const host = 'localhost'
 const session = require('express-session')
 const dbOperations = require('./dbOperations')
-const { connected } = require('process')
 
 
 app.use(session({
@@ -40,12 +39,14 @@ app.get('/',async(req,res) => {
         let isEqual = null
         res.render("pages/register",{AlredyExists,isEqual})
     } else {
+        
         let firstName = req.session.firstName
         let lastName = req.session.lastName
-        let name = req.session.username
-        let response = await   dbOperations.getUserId(name) 
+        let name = req.session.usermane
+        let response = await  dbOperations.getUserId(name) 
         let id = response[0].id
-        let Todos = dbOperations.getTodoList(name,id) || []
+        let Todos = await dbOperations.getTodos(id)  
+        .log(firstName,lastName,name,response,id,Todos)
         res.render('pages/main',{firstName,lastName,Todos})
     }
 })
@@ -53,7 +54,6 @@ app.get('/',async(req,res) => {
 app.post('/register', async (req,res) => {
     let AlredyExists = null
     let isEqual = null
-    console.log(req.body)
     let pas = req.body.password === req.body.passwordRe
     if(!pas) isEqual = false
         let result = await dbOperations.addToDb(req.body.username,req.body.password,req.body.FirstName,req.body.LastName)
@@ -84,7 +84,7 @@ app.post('/login',async (req,res) => {
             let lastName = resp[0].Lastname
             let response = await dbOperations.getUserId(req.session.usermane) 
             let id = response[0].id
-            let Todos = dbOperations.getTodoList(req.session.usermane,id) || []
+            let Todos =  await dbOperations.getTodos(id) || []
             res.render('pages/main',{firstName,lastName,Todos})
         }
 })
@@ -161,15 +161,15 @@ app.post('/deleteList',async (req,res) => {
     let username = req.session.usermane
     let lastName = req.session.lastName
     let firstName = req.session.firstName
-    let title = req.body.titleName
+    const title = req.body.titleName
     await dbOperations.removeTodoList(username,title)
     let response = await dbOperations.getUserId(req.session.usermane) 
     let id = response[0].id
-    let Todos = dbOperations.getTodoList(req.session.usermane,id) || []
+    let Todos = await dbOperations.getTodos(id)
     res.render('pages/main',{firstName,lastName,Todos})
 })
 
-app.post('/updateTask',async (req,res) => {
+app.post('/updateList',async (req,res) => {
     let username = req.session.usermane
     let lastName = req.session.lastName
     let firstName = req.session.firstName
@@ -178,12 +178,21 @@ app.post('/updateTask',async (req,res) => {
     await dbOperations.updateTodoListName(username,title,newTitle)
     let response = await dbOperations.getUserId(req.session.usermane) 
     let id = response[0].id
-    let Todos = dbOperations.getTodoList(req.session.usermane,id) || []
+    let Todos = await dbOperations.getTodos(id)
     res.render('pages/main',{firstName,lastName,Todos})
 })
 
-app.get(/showTodo:*/,async (req,res) => {
-    
+app.get(/ShowTodo/,async (req,res) => {
+    let str  = req.url.split(':')
+    let username = req.session.usermane
+    let lastName = req.session.lastName
+    let firstName = req.session.firstName
+    req.session.title = str[1]
+    const title = str[1]
+    let todoList = JSON.parse((await dbOperations.getTodoList(username,title))[0].TodoObject)
+    let tasks = todoList.taskList
+    res.render("pages/createList",{firstName,lastName,title,tasks})
+
 })
 
 

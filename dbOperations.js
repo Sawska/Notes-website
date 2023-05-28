@@ -72,6 +72,7 @@ async function createTodoList(username,TodolistTitle) {
  async function getUserId(username) {
     return new Promise((resolve,reject) => {
         connection.query(`SELECT id FROM users WHERE username = '${username}'`,(err,result) => {
+            if(err) throw err
             if(result.length !== 0) resolve(result)
         })
     })
@@ -94,16 +95,16 @@ async function addTask(username,taskTitle,taskDescription,Title) {
     let task = new todoList.Task(taskTitle,taskDescription)
 
     TodoList.taskList.push(task)
-    // TodoList = JSON.stringify(TodoList)
     let response = await getUserId(username) 
     let id = response[0].id
     await updateTodoList(Title,id,TodoList)
 }
 
 async function updateTodoList(title,id,todoList) {
+    let newTitle = todoList.title
     todoList = JSON.stringify(todoList)
     return new Promise((resolve,reject) => {
-        connection.query(`UPDATE todoList SET TodoObject = '${todoList}' WHERE UserId = ${id} AND Title = '${title}'`,(err,res) => {
+        connection.query(`UPDATE todoList SET TodoObject = '${todoList}', Title = '${newTitle}'  WHERE UserId = ${id} AND Title = '${title}'`,(err,res) => {
             if(err) reject(err)
             else resolve(true)
         })
@@ -114,17 +115,21 @@ async function updateTodoListName(username,Title,newName) {
     let res = await getTodoList(username,Title)
     let TodoList = JSON.parse(res[0].TodoObject)
     TodoList.title = newName
-    TodoList = JSON.stringify(TodoList)
     let response = await getUserId(username) 
     let id = response[0].id
-    await updateTodoList(Title,id,todoList)
+    await updateTodoList(Title,id,TodoList)
 }
 
 async function removeTodoList(username,title) {
      let res = await getUserId(username) 
      let id = res[0].id
-     connection.query(`DELETE from todoList WHERE UserId = ${id} AND Title = '${title}'`)
-}
+     return new Promise((resolve,reject) => {
+        connection.query(`DELETE from todoList WHERE UserId = ${id} AND Title = '${title}'`,(err,res) => {
+            if(err) throw err
+            else resolve(true)
+        })
+     })
+}   
 
 
 async function updateTask(username,newTaskTitle,newTaskDescription,Title,index) {
@@ -132,7 +137,6 @@ async function updateTask(username,newTaskTitle,newTaskDescription,Title,index) 
     let TodoList = JSON.parse(res[0].TodoObject)
      TodoList.taskList[index].title = newTaskTitle
      TodoList.taskList[index].title = newTaskDescription
-        // TodoList = JSON.stringify(TodoList)
     let response = await getUserId(username) 
     let id = response[0].id
     await updateTodoList(Title,id,TodoList)
@@ -142,17 +146,16 @@ async function removeTask(username,Title,index) {
     let res = await getTodoList(username,Title)
     let TodoList = JSON.parse(res[0].TodoObject)
 TodoList.taskList = TodoList.taskList.filter((el,i) => i !== +index)
-    // TodoList = JSON.stringify(TodoList)
     let response = await getUserId(username) 
     let id = response[0].id
     await updateTodoList(Title,id,TodoList)
 }
 
-function getTodos(id,username) {
-    return new Promise((reject,resolve) => {
-        connection.query(`SELECT Title from todoList WHERE UserId = ${id} AND username = '${username}'`, (err,result) => {
-            if(err) reject(err)
-            else resolve(result)
+function getTodos(id) {
+    return new Promise((resolve,reject) => {
+        connection.query(`SELECT TodoObject FROM todoList WHERE UserId = ${id}`, (err,result) => {
+            if(err)  reject(err)
+            resolve(result)
         })
     })
 }
@@ -172,4 +175,5 @@ module.exports = {
     getUserId,
     removeTodoList,
     updateTodoListName,
+    getTodos
 }
