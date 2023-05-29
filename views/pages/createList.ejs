@@ -32,8 +32,8 @@
         </div>
       </nav>
       </div>
-      <form action="/" method="get">
-        <button class="crtTd">
+      <form id="Submt" action="/SubmitList" method="post" >
+        <button class="crtTd" id="SubmitBtn">
             <span>&#x2713;</span>
         </button>
     </form>
@@ -62,7 +62,7 @@
                 <li class="element">
                   <div class="li-row">
                     <span>
-                      <input type="checkbox">
+                      <input type="checkbox" class="checkbox" <%= tasks[i].checked ? 'checked' : '' %> >
                       <span class="Title-text" name="taskTitle"><%= tasks[i].title%></span>
                     </span>
                     <input type="hidden" class="secretIndex" name="index" value="<%= i %>">

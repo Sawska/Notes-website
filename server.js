@@ -45,9 +45,9 @@ app.get('/',async(req,res) => {
         let name = req.session.usermane
         let response = await  dbOperations.getUserId(name) 
         let id = response[0].id
-        let Todos = await dbOperations.getTodos(id)  
-        .log(firstName,lastName,name,response,id,Todos)
-        res.render('pages/main',{firstName,lastName,Todos})
+        let Todos = await dbOperations.getTodos(id)
+        let ListId = await dbOperations.getListId(id)  
+        res.render('pages/main',{firstName,lastName,Todos,ListId})
     }
 })
 
@@ -85,7 +85,8 @@ app.post('/login',async (req,res) => {
             let response = await dbOperations.getUserId(req.session.usermane) 
             let id = response[0].id
             let Todos =  await dbOperations.getTodos(id) || []
-            res.render('pages/main',{firstName,lastName,Todos})
+            let ListId = await dbOperations.getListId(id) || []
+            res.render('pages/main',{firstName,lastName,Todos,ListId})
         }
 })
 
@@ -106,10 +107,11 @@ app.get('/addTodo',(req,res) => {
 app.post('/TitleCreate',async (req,res) => {
     let title = req.body.TodolistTitle
     let username = req.session.usermane
-    await dbOperations.createTodoList(username,title)
+    let result = await dbOperations.createTodoList(username,title)
     let firstName = req.session.firstName
     let lastName = req.session.lastName
     req.session.title = title
+    req.session.ListId = result
     let tasks =  []
     res.render("pages/createList",{firstName,lastName,title,tasks})
 })
@@ -121,8 +123,9 @@ app.post('/addTask',async (req,res) => {
     let firstName = req.session.firstName
     let lastName = req.session.lastName
     let title = req.session.title
-    await dbOperations.addTask(username,taskTitle,taskDescription,title)
-    let todoList = JSON.parse((await dbOperations.getTodoList(username,title))[0].TodoObject)
+    let ListId = req.session.ListId
+    await dbOperations.addTask(username,taskTitle,taskDescription,title,ListId)
+    let todoList = JSON.parse((await dbOperations.getTodoList(username,title,ListId))[0].TodoObject)
     let tasks = todoList.taskList
     res.render("pages/createList",{firstName,lastName,title,tasks})
 })
@@ -133,8 +136,9 @@ app.post('/RemoveTask', async (req,res) => {
     let firstName = req.session.firstName
     let title = req.session.title
     let index = req.body.index
-    await dbOperations.removeTask(username,title,index)
-    let todoList = JSON.parse((await dbOperations.getTodoList(username,title))[0].TodoObject)
+    let ListId = req.session.ListId
+    await dbOperations.removeTask(username,title,index,ListId)
+    let todoList = JSON.parse((await dbOperations.getTodoList(username,title,ListId))[0].TodoObject)
     let tasks = todoList.taskList
     res.render("pages/createList",{firstName,lastName,title,tasks})
     
@@ -150,8 +154,9 @@ app.post('/updateTask', async (req,res) => {
     let newTaskTitle = req.body.taskName
     let newTaskDescription = req.body.taskDescription
     let index = req.body.index
-    await dbOperations.updateTask(username,newTaskTitle,newTaskDescription,title,index)
-     let todoList = JSON.parse((await dbOperations.getTodoList(username,title))[0].TodoObject)
+    let ListId = req.session.ListId
+    await dbOperations.updateTask(username,newTaskTitle,newTaskDescription,title,index,ListId)
+     let todoList = JSON.parse((await dbOperations.getTodoList(username,title.ListId))[0].TodoObject)
      let tasks = todoList.taskList;
     res.render("pages/createList",{firstName,lastName,title,tasks})
 
@@ -162,11 +167,14 @@ app.post('/deleteList',async (req,res) => {
     let lastName = req.session.lastName
     let firstName = req.session.firstName
     const title = req.body.titleName
-    await dbOperations.removeTodoList(username,title)
+    const listId = req.body.ListId
+    console.log(listId)
+    await dbOperations.removeTodoList(username,title,listId)
     let response = await dbOperations.getUserId(req.session.usermane) 
     let id = response[0].id
     let Todos = await dbOperations.getTodos(id)
-    res.render('pages/main',{firstName,lastName,Todos})
+    let ListId = await dbOperations.getListId(id)
+    res.render('pages/main',{firstName,lastName,Todos,ListId})
 })
 
 app.post('/updateList',async (req,res) => {
@@ -175,11 +183,13 @@ app.post('/updateList',async (req,res) => {
     let firstName = req.session.firstName
     let newTitle = req.body.TodolistTitle
     let title = req.body.title
-    await dbOperations.updateTodoListName(username,title,newTitle)
+    const listId = req.body.ListId
+    await dbOperations.updateTodoListName(username,title,newTitle,listId)
     let response = await dbOperations.getUserId(req.session.usermane) 
     let id = response[0].id
     let Todos = await dbOperations.getTodos(id)
-    res.render('pages/main',{firstName,lastName,Todos})
+    let ListId = await dbOperations.getListId(id)
+    res.render('pages/main',{firstName,lastName,Todos,ListId})
 })
 
 app.get(/ShowTodo/,async (req,res) => {
@@ -188,13 +198,27 @@ app.get(/ShowTodo/,async (req,res) => {
     let lastName = req.session.lastName
     let firstName = req.session.firstName
     req.session.title = str[1]
+    req.session.ListId = +str[3]
     const title = str[1]
-    let todoList = JSON.parse((await dbOperations.getTodoList(username,title))[0].TodoObject)
+    let todoList = JSON.parse((await dbOperations.getTodoList(username,title,req.session.ListId))[0].TodoObject)
     let tasks = todoList.taskList
     res.render("pages/createList",{firstName,lastName,title,tasks})
 
 })
 
+
+app.post('/SubmitList', async(req,res) => {
+    let firstName = req.session.firstName
+        let lastName = req.session.lastName
+        let name = req.session.usermane
+        let response = await  dbOperations.getUserId(name) 
+        let id = response[0].id
+        let Todos = await dbOperations.getTodos(id)
+        let ListId = await dbOperations.getListId(id)
+        let value = req.body.Checked.split(' ').map((el) => Boolean(+el))
+         await dbOperations.updateCrossValue(name,req.session.title,value)
+        res.render('pages/main',{firstName,lastName,Todos,ListId})
+})
 
 app.listen(PORT,host,(err) => {
     if(err) throw err

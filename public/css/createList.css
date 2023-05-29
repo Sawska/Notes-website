@@ -193,6 +193,12 @@ body {
     display: none;
 }
 
-.element input[type="checkbox"]:checked ~ .Title-text ~ .Description-text {
+.checkbox:checked + .Title-text {
     text-decoration: line-through;
-}
+    text-decoration-color: red;
+  }
+  
+  .checkbox:checked ~ .li-row .Description-text {
+    text-decoration: line-through;
+    text-decoration-color: red;
+  }

@@ -35,7 +35,7 @@
             <div class="line">
               <form action="/deleteList" method="post">
                 <div class="TaskField">
-                  <a href="http://localhost:3000/ShowTodo:<%= JSON.parse(Todos[i].TodoObject).title %>:<%= i %>">
+                  <a href="http://localhost:3000/ShowTodo:<%= JSON.parse(Todos[i].TodoObject).title %>:<%= i %>:<%= ListId[i].ListId %>" class="link">
                     <p class="todoListText" name="titleName"><%= JSON.parse(Todos[i].TodoObject).title %></p>
                   </a>
                   <input type="hidden" name="titleName" value="<%= JSON.parse(Todos[i].TodoObject).title %>">
@@ -47,6 +47,7 @@
                       <i class="fa-solid fa-trash-can"></i>
                     </button>
                     <input type="hidden" class="secretIndex" name="index" value="<%= i %>">
+                    <input type="hidden" class="secretIndex" name="ListId" value="<%= ListId[i].ListId %>"
                   </div>
                 </div>
               </form>
@@ -59,6 +60,7 @@
                     </div>
                     <div class="input-row">
                       <input type="hidden" class="secretIndex" name="title" value="<%= JSON.parse(Todos[i].TodoObject).title %>">
+                      <input type="hidden" class="secretIndex" name="ListId" value="<%= ListId[i].ListId %>">
                       <button class="TitleSubmit" type="submit">Confirm</button>
                     </div>
                   </div>

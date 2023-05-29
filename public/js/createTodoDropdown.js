@@ -49,7 +49,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const text1 = document.getElementById('myTxt');
     text1.addEventListener('input',function() {
       this.style.height = 'auto';
-      this.style.height = this.scrollHeight + 'px';
+      this.style.heighxt = this.scrollHeight + 'px';
     });
-
+    document.getElementById('Submt').addEventListener('submit',(event) => {
+      event.preventDefault()
+      let input = document.createElement('input')
+      input.type = 'text'
+      input.name = 'Checked'
+      input.value = getChecked()
+      let form = document.getElementById('Submt')
+      form.appendChild(input)
+      form.submit()
+    })
+    function getChecked() {
+      const checkboxes = document.querySelectorAll('.checkbox')
+      let arr = new Array(checkboxes.length)
+      checkboxes.forEach((el,i) => {
+        el.checked ? arr[i] = 1: arr[i] = 0
+      })
+      return arr
+    }
   })
