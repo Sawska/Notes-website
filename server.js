@@ -212,12 +212,14 @@ app.post('/SubmitList', async(req,res) => {
         let name = req.session.usermane
         let response = await  dbOperations.getUserId(name) 
         let id = response[0].id
+        let indexes =req.body.Indexes.split(',')
         let Todos = await dbOperations.getTodos(id)
         let ListId = await dbOperations.getListId(id)
         if(req.body.Checked !== undefined) {
             let value = req.body.Checked.split(' ').map((el) => Boolean(+el))    
             await dbOperations.updateCrossValue(name,req.session.title,value,req.session.ListId)
         }
+        await dbOperations.updateTaskListProperty(name,req.session.title,req.session.ListId,indexes)
         res.render('pages/main',{firstName,lastName,Todos,ListId})
 })
 

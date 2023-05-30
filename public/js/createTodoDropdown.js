@@ -58,7 +58,12 @@ document.addEventListener("DOMContentLoaded", () => {
       input.name = 'Checked'
       input.value = getChecked()
       let form = document.getElementById('Submt')
+      let input2 = document.createElement('input')
+      input2.type = 'text'
+      input2.name = 'Indexes'
+      input2.value = Array.from(document.querySelectorAll('.secretIndex')).map(el => el.value);
       form.appendChild(input)
+      form.appendChild(input2)
       form.submit()
     })
     function getChecked() {
@@ -69,6 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       return arr
     }
+
     $(document).ready(function() {
       $('.checkbox').on('change', function() {
         var isChecked = $(this).is(':checked');
@@ -76,4 +82,11 @@ document.addEventListener("DOMContentLoaded", () => {
         $(this).parents('.element').find('.Description-text').toggleClass('checked', isChecked);
       });
     });
+
+    $(function() {
+      $("#taskList").sortable({
+        axis:'y',
+        containment: "parent"
+      }).disableSelection()
+    })
   })

@@ -184,6 +184,20 @@ function getListId(id) {
     })
 }
 
+async function updateTaskListProperty(username,title,listId,indexex) {
+    let res = await getTodoList(username,title,listId)
+    let TodoList = JSON.parse(res[0].TodoObject)
+    let arr = []
+    for(let i = 0;i<indexex.length;i++) {
+        let index = indexex[i]
+        arr[i] = TodoList.taskList[index]
+    }
+    TodoList.taskList = arr
+    let response = await getUserId(username)
+    let id = response[0].id
+    await updateTodoList(title,id,TodoList,listId)
+}
+
 
 module.exports = {
     addToDb,
@@ -201,5 +215,6 @@ module.exports = {
     updateTodoListName,
     getTodos,
     updateCrossValue,
-    getListId
+    getListId,
+    updateTaskListProperty
 }
