@@ -155,8 +155,8 @@ app.post('/updateTask', async (req,res) => {
     let newTaskDescription = req.body.taskDescription
     let index = req.body.index
     let ListId = req.session.ListId
-    await dbOperations.updateTask(username,newTaskTitle,newTaskDescription,title,index,ListId)
-     let todoList = JSON.parse((await dbOperations.getTodoList(username,title.ListId))[0].TodoObject)
+    await dbOperations.updateTask(username,newTaskTitle,newTaskDescription,title,index, ListId)
+     let todoList = JSON.parse((await dbOperations.getTodoList(username,title, ListId))[0].TodoObject)
      let tasks = todoList.taskList;
     res.render("pages/createList",{firstName,lastName,title,tasks})
 
@@ -168,7 +168,6 @@ app.post('/deleteList',async (req,res) => {
     let firstName = req.session.firstName
     const title = req.body.titleName
     const listId = req.body.ListId
-    console.log(listId)
     await dbOperations.removeTodoList(username,title,listId)
     let response = await dbOperations.getUserId(req.session.usermane) 
     let id = response[0].id
@@ -215,8 +214,10 @@ app.post('/SubmitList', async(req,res) => {
         let id = response[0].id
         let Todos = await dbOperations.getTodos(id)
         let ListId = await dbOperations.getListId(id)
-        let value = req.body.Checked.split(' ').map((el) => Boolean(+el))
-         await dbOperations.updateCrossValue(name,req.session.title,value)
+        if(req.body.Checked !== undefined) {
+            let value = req.body.Checked.split(' ').map((el) => Boolean(+el))    
+            await dbOperations.updateCrossValue(name,req.session.title,value,req.session.ListId)
+        }
         res.render('pages/main',{firstName,lastName,Todos,ListId})
 })
 

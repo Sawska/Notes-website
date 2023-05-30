@@ -55,7 +55,7 @@
                 <div id="updateTitle<%= i %>" class="TitleUpdate">
                   <div class="form-content">
                     <span class="updateClose">&times;</span>
-                    <div class="input-row">
+                    <div class="input-row ListName">
                       <input type="text" name="TodolistTitle" value="<%= JSON.parse(Todos[i].TodoObject).title %>" required>
                     </div>
                     <div class="input-row">
@@ -77,7 +77,7 @@
         <form action="/TitleCreate" method="post">
         <div class="form-content">
           <span class="close">&times;</span>
-          <div class="input-row">
+          <div class="input-row ListName">
             <input type="text" placeholder="Todo list name" name="TodolistTitle">
             
           </div>

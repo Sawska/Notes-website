@@ -69,4 +69,11 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       return arr
     }
+    $(document).ready(function() {
+      $('.checkbox').on('change', function() {
+        var isChecked = $(this).is(':checked');
+        $(this).siblings('.Title-text').toggleClass('checked', isChecked);
+        $(this).parents('.element').find('.Description-text').toggleClass('checked', isChecked);
+      });
+    });
   })

@@ -139,7 +139,7 @@ async function updateTask(username,newTaskTitle,newTaskDescription,Title,index,l
          let res = await getTodoList(username,Title,listId)
     let TodoList = JSON.parse(res[0].TodoObject)
      TodoList.taskList[index].title = newTaskTitle
-     TodoList.taskList[index].title = newTaskDescription
+     TodoList.taskList[index].description = newTaskDescription
     let response = await getUserId(username) 
     let id = response[0].id
     await updateTodoList(Title,id,TodoList,listId)
@@ -172,7 +172,6 @@ async function updateCrossValue(username,Title,check,listId) {
     }
     let response = await getUserId(username) 
     let id = response[0].id
-    console.log(TodoList.taskList[0].checked)
     await updateTodoList(Title,id,TodoList,listId)
 }
 
